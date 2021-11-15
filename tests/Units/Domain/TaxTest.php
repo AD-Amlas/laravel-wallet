@@ -6,7 +6,7 @@ namespace Bavix\Wallet\Test\Units\Domain;
 
 use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 use Bavix\Wallet\Test\Infra\Factories\BuyerFactory;
 use Bavix\Wallet\Test\Infra\Factories\ItemTaxFactory;
 use Bavix\Wallet\Test\Infra\Models\Buyer;
@@ -40,8 +40,8 @@ class TaxTest extends TestCase
         self::assertNotNull($transfer);
 
         /**
-         * @var Transaction $withdraw
-         * @var Transaction $deposit
+         * @var TransactionInterface $withdraw
+         * @var TransactionInterface $deposit
          */
         $withdraw = $transfer->withdraw;
         $deposit = $transfer->deposit;
@@ -84,8 +84,8 @@ class TaxTest extends TestCase
         self::assertNotNull($transfer);
 
         /**
-         * @var Transaction $withdraw
-         * @var Transaction $deposit
+         * @var TransactionInterface $withdraw
+         * @var TransactionInterface $deposit
          */
         $withdraw = $transfer->withdraw;
         $deposit = $transfer->deposit;

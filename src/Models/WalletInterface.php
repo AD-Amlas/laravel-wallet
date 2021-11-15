@@ -25,14 +25,13 @@ interface WalletInterface extends Customer, WalletFloat, Confirmable, Exchangeab
      */
     public function refreshBalance(): bool;
 
-    public function getOriginalBalance(): string;
-
-    /**
-     * @return float|int
-     */
-    public function getAvailableBalance();
-
     public function holder(): MorphTo;
 
+    public function getOriginalBalanceAttribute(): string;
+
+    public function getAvailableBalanceAttribute(): string;
+
     public function getCurrencyAttribute(): string;
+
+    public function getDecimalPlacesAttribute(): int;
 }

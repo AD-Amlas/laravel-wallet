@@ -15,8 +15,8 @@ namespace PHPSTORM_META {
     use Bavix\Wallet\Services\PrepareServiceInterface;
     use Bavix\Wallet\Internal\Transform\TransactionDtoTransformerInterface;
     use Bavix\Wallet\Internal\Transform\TransferDtoTransformerInterface;
-    use Bavix\Wallet\Models\Transaction;
-    use Bavix\Wallet\Models\Transfer;
+    use Bavix\Wallet\Models\TransactionInterface;
+    use Bavix\Wallet\Models\TransferInterface;
     use Bavix\Wallet\Models\Wallet;
     use Bavix\Wallet\Services\AssistantServiceInterface;
     use Bavix\Wallet\Services\AtmServiceInterface;
@@ -63,8 +63,8 @@ namespace PHPSTORM_META {
 
         // legacy.models
         Wallet::class => Wallet::class,
-        Transfer::class => Transfer::class,
-        Transaction::class => Transaction::class,
+        TransferInterface::class => TransferInterface::class,
+        TransactionInterface::class => TransactionInterface::class,
 
         // legacy.objects
         Cart::class => Cart::class,

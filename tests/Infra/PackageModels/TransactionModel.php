@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Bavix\Wallet\Test\Infra\PackageModels;
 
+use Bavix\Wallet\Models\Transaction;
+
 /**
  * Class Transaction.
  *
  * @property null|string $bank_method
  */
-class Transaction extends \Bavix\Wallet\Models\Transaction
+class TransactionModel extends Transaction
 {
     /**
      * {@inheritdoc}

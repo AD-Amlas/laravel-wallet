@@ -151,12 +151,12 @@ class BalanceTest extends TestCase
         self::assertSame(0, $wallet->balanceInt);
         self::assertTrue($wallet->exists);
 
-        /** @var MockObject|Wallet $mockQuery */
+        /** @var MockObject|WalletInterface $mockQuery */
         $mockQuery = $this->createMock(\get_class($wallet->newQuery()));
         $mockQuery->method('whereKey')->willReturn($mockQuery);
         $mockQuery->method('update')->willThrowException(new PDOException());
 
-        /** @var MockObject|Wallet $mockWallet */
+        /** @var MockObject|WalletInterface $mockWallet */
         $mockWallet = $this->createMock(\get_class($wallet));
         $mockWallet->method('getBalanceAttribute')->willReturn('125');
         $mockWallet->method('newQuery')->willReturn($mockQuery);
@@ -236,12 +236,12 @@ class BalanceTest extends TestCase
         self::assertSame(0, $wallet->balanceInt);
         self::assertTrue($wallet->exists);
 
-        /** @var MockObject|Wallet $mockQuery */
+        /** @var MockObject|WalletInterface $mockQuery */
         $mockQuery = $this->createMock(\get_class($wallet->newQuery()));
         $mockQuery->method('whereKey')->willReturn($mockQuery);
         $mockQuery->method('update')->willReturn(0);
 
-        /** @var MockObject|Wallet $mockWallet */
+        /** @var MockObject|WalletInterface $mockWallet */
         $mockWallet = $this->createMock(\get_class($wallet));
         $mockWallet->method('newQuery')->willReturn($mockQuery);
         $mockWallet->method('getKey')->willReturn($wallet->getKey());

@@ -10,8 +10,8 @@ use Bavix\Wallet\Internal\Query\TransactionQuery;
 use Bavix\Wallet\Internal\Query\TransferQuery;
 use Bavix\Wallet\Internal\Repository\TransactionRepositoryInterface;
 use Bavix\Wallet\Internal\Repository\TransferRepositoryInterface;
-use Bavix\Wallet\Models\Transaction;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransactionInterface;
+use Bavix\Wallet\Models\TransferInterface;
 
 /** @psalm-internal */
 final class AtmService implements AtmServiceInterface
@@ -33,7 +33,7 @@ final class AtmService implements AtmServiceInterface
     /**
      * @param non-empty-array<int|string, TransactionDtoInterface> $objects
      *
-     * @return non-empty-array<string, Transaction>
+     * @return non-empty-array<string, TransactionInterface>
      */
     public function makeTransactions(array $objects): array
     {
@@ -55,7 +55,7 @@ final class AtmService implements AtmServiceInterface
     /**
      * @param non-empty-array<int|string, TransferDtoInterface> $objects
      *
-     * @return non-empty-array<string, Transfer>
+     * @return non-empty-array<string, TransferInterface>
      */
     public function makeTransfers(array $objects): array
     {

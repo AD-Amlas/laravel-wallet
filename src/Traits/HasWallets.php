@@ -8,8 +8,9 @@ use function array_key_exists;
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Bavix\Wallet\Internal\Exceptions\ModelNotFoundException;
 use Bavix\Wallet\Internal\Service\UuidServiceInterface;
-use Bavix\Wallet\Models\Wallet as WalletModel;
+use Bavix\Wallet\Models\WalletInterface as WalletModel;
 use function config;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException as EloquentModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
@@ -18,7 +19,7 @@ use Illuminate\Support\Collection;
  * Trait HasWallets
  * To use a trait, you must add HasWallet trait.
  *
- * @property Collection|WalletModel[] $wallets
+ * @property Collection|Model[]|WalletModel[] $wallets
  */
 trait HasWallets
 {
@@ -42,8 +43,10 @@ trait HasWallets
      *
      *  $user->getWallet('usd')->balance; // 50
      *  $user->getWallet('rub')->balance; // 100
+     *
+     * @return null|Model|WalletModel
      */
-    public function getWallet(string $slug): ?WalletModel
+    public function getWallet(string $slug)
     {
         try {
             return $this->getWalletOrFail($slug);
@@ -65,8 +68,10 @@ trait HasWallets
      *  $user->getWallet('rub')->balance; // 100
      *
      * @throws ModelNotFoundException
+     *
+     * @return Model|WalletModel
      */
-    public function getWalletOrFail(string $slug): WalletModel
+    public function getWalletOrFail(string $slug)
     {
         if (!$this->_loadedWallets && $this->relationLoaded('wallets')) {
             $this->_loadedWallets = true;
@@ -104,7 +109,7 @@ trait HasWallets
 
     public function createWallet(array $data): WalletModel
     {
-        /** @var WalletModel $wallet */
+        /** @var Model|WalletModel $wallet */
         $wallet = $this->wallets()->create(array_merge(
             config('wallet.wallet.creating', []),
             $data,

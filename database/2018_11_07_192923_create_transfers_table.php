@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bavix\Wallet\Models\Transaction;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransactionInterface;
+use Bavix\Wallet\Models\TransferInterface;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -67,11 +67,11 @@ class CreateTransfersTable extends Migration
 
     private function table(): string
     {
-        return (new Transfer())->getTable();
+        return app(TransferInterface::class)->getTable();
     }
 
     private function transactionTable(): string
     {
-        return (new Transaction())->getTable();
+        return app(TransactionInterface::class)->getTable();
     }
 }

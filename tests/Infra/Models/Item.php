@@ -6,8 +6,9 @@ namespace Bavix\Wallet\Test\Infra\Models;
 
 use Bavix\Wallet\Interfaces\Customer;
 use Bavix\Wallet\Interfaces\Product;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Models\Wallet;
+use Bavix\Wallet\Models\WalletInterface;
 use Bavix\Wallet\Services\CastService;
 use Bavix\Wallet\Traits\HasWallet;
 use Illuminate\Database\Eloquent\Model;
@@ -39,7 +40,7 @@ class Item extends Model implements Product
 
     public function getAmountProduct(Customer $customer)
     {
-        /** @var Wallet $wallet */
+        /** @var WalletInterface $wallet */
         $wallet = app(CastService::class)->getWallet($customer);
 
         return $this->price + $wallet->holder_id;
@@ -56,8 +57,8 @@ class Item extends Model implements Product
     public function boughtGoods(array $walletIds): MorphMany
     {
         return $this
-            ->morphMany(config('wallet.transfer.model', Transfer::class), 'to')
-            ->where('status', Transfer::STATUS_PAID)
+            ->morphMany(config('wallet.transfer.model', TransferInterface::class), 'to')
+            ->where('status', TransferInterface::STATUS_PAID)
             ->where('from_type', config('wallet.wallet.model', Wallet::class))
             ->whereIn('from_id', $walletIds)
         ;

@@ -6,10 +6,10 @@ namespace Bavix\Wallet\Services;
 
 use Bavix\Wallet\Interfaces\Customer;
 use Bavix\Wallet\Internal\Dto\BasketDtoInterface;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 
 interface PurchaseServiceInterface
 {
-    /** @return Transfer[] */
+    /** @return TransferInterface[] */
     public function already(Customer $customer, BasketDtoInterface $basketDto, bool $gifts = false): array;
 }

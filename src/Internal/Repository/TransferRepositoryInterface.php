@@ -6,7 +6,7 @@ namespace Bavix\Wallet\Internal\Repository;
 
 use Bavix\Wallet\Internal\Dto\TransferDtoInterface;
 use Bavix\Wallet\Internal\Query\TransferQuery;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 
 interface TransferRepositoryInterface
 {
@@ -15,6 +15,6 @@ interface TransferRepositoryInterface
      */
     public function insert(array $objects): void;
 
-    /** @return Transfer[] */
+    /** @return TransferInterface[] */
     public function findBy(TransferQuery $query): array;
 }

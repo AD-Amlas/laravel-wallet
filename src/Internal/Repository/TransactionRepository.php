@@ -7,17 +7,17 @@ namespace Bavix\Wallet\Internal\Repository;
 use Bavix\Wallet\Internal\Dto\TransactionDtoInterface;
 use Bavix\Wallet\Internal\Query\TransactionQuery;
 use Bavix\Wallet\Internal\Transform\TransactionDtoTransformerInterface;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 
 final class TransactionRepository implements TransactionRepositoryInterface
 {
     private TransactionDtoTransformerInterface $transformer;
 
-    private Transaction $transaction;
+    private TransactionInterface $transaction;
 
     public function __construct(
         TransactionDtoTransformerInterface $transformer,
-        Transaction $transaction
+        TransactionInterface $transaction
     ) {
         $this->transformer = $transformer;
         $this->transaction = $transaction;
@@ -32,7 +32,7 @@ final class TransactionRepository implements TransactionRepositoryInterface
         $this->transaction->newQuery()->insert($values);
     }
 
-    /** @return Transaction[] */
+    /** @return TransactionInterface[] */
     public function findBy(TransactionQuery $query): array
     {
         return $this->transaction->newQuery()

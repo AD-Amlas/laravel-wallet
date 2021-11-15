@@ -10,7 +10,7 @@ use Bavix\Wallet\Internal\Assembler\TransferLazyDtoAssemblerInterface;
 use Bavix\Wallet\Internal\Dto\TransactionDtoInterface;
 use Bavix\Wallet\Internal\Dto\TransferLazyDtoInterface;
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 
 final class PrepareService implements PrepareServiceInterface
 {
@@ -47,7 +47,7 @@ final class PrepareService implements PrepareServiceInterface
         return $this->transactionDtoAssembler->create(
             $this->castService->getHolder($wallet),
             $this->castService->getWallet($wallet)->getKey(),
-            Transaction::TYPE_DEPOSIT,
+            TransactionInterface::TYPE_DEPOSIT,
             $amount,
             $confirmed,
             $meta
@@ -61,7 +61,7 @@ final class PrepareService implements PrepareServiceInterface
         return $this->transactionDtoAssembler->create(
             $this->castService->getHolder($wallet),
             $this->castService->getWallet($wallet)->getKey(),
-            Transaction::TYPE_WITHDRAW,
+            TransactionInterface::TYPE_WITHDRAW,
             $this->mathService->negative($amount),
             $confirmed,
             $meta
@@ -79,7 +79,7 @@ final class PrepareService implements PrepareServiceInterface
 
         $amountWithoutDiscount = $this->mathService->sub($amount, $discount);
         $depositAmount = $this->mathService->compare($amountWithoutDiscount, 0) === -1 ? '0' : $amountWithoutDiscount;
-        $withdrawAmount = $this->mathService->add($depositAmount, $fee, $from->decimal_places);
+        $withdrawAmount = $this->mathService->add($depositAmount, $fee, $from->getDecimalPlacesAttribute());
 
         return $this->transferLazyDtoAssembler->create(
             $from,

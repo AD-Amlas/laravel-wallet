@@ -10,9 +10,10 @@ use Bavix\Wallet\Internal\Assembler\TransferDtoAssemblerInterface;
 use Bavix\Wallet\Internal\Dto\TransactionDtoInterface;
 use Bavix\Wallet\Internal\Dto\TransferLazyDtoInterface;
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
-use Bavix\Wallet\Models\Transaction;
-use Bavix\Wallet\Models\Transfer;
-use Bavix\Wallet\Models\Wallet as WalletModel;
+use Bavix\Wallet\Models\TransactionInterface;
+use Bavix\Wallet\Models\TransferInterface;
+use Bavix\Wallet\Models\WalletInterface;
+use Illuminate\Database\Eloquent\Model;
 use Throwable;
 
 final class CommonServiceLegacy
@@ -49,7 +50,7 @@ final class CommonServiceLegacy
      * @throws AmountInvalid
      * @throws Throwable
      */
-    public function forceTransfer(Wallet $from, Wallet $to, $amount, ?array $meta = null, string $status = Transfer::STATUS_TRANSFER): Transfer
+    public function forceTransfer(Wallet $from, Wallet $to, $amount, ?array $meta = null, string $status = TransferInterface::STATUS_TRANSFER): TransferInterface
     {
         $transferLazyDto = $this->prepareService->transferLazy($from, $to, $status, $amount, $meta);
         $transfers = $this->applyTransfers([$transferLazyDto]);
@@ -60,7 +61,7 @@ final class CommonServiceLegacy
     /**
      * @param non-empty-array<TransferLazyDtoInterface> $objects
      *
-     * @return non-empty-array<Transfer>
+     * @return non-empty-array<TransferInterface>
      */
     public function applyTransfers(array $objects): array
     {
@@ -111,7 +112,7 @@ final class CommonServiceLegacy
     public function addBalance(Wallet $wallet, $amount): bool
     {
         return $this->databaseService->transaction(function () use ($wallet, $amount) {
-            /** @var WalletModel $wallet */
+            /** @var Model|WalletInterface $walletObject */
             $walletObject = $this->castService->getWallet($wallet);
             $balance = $this->bookkeeper->increase($walletObject, $amount);
             $result = 0;
@@ -136,11 +137,11 @@ final class CommonServiceLegacy
     /**
      * @param float|int|string $amount
      */
-    public function makeTransaction(Wallet $wallet, string $type, $amount, ?array $meta, bool $confirmed = true): Transaction
+    public function makeTransaction(Wallet $wallet, string $type, $amount, ?array $meta, bool $confirmed = true): TransactionInterface
     {
-        assert(in_array($type, [Transaction::TYPE_DEPOSIT, Transaction::TYPE_WITHDRAW], true));
+        assert(in_array($type, [TransactionInterface::TYPE_DEPOSIT, TransactionInterface::TYPE_WITHDRAW], true));
 
-        if ($type === Transaction::TYPE_DEPOSIT) {
+        if ($type === TransactionInterface::TYPE_DEPOSIT) {
             $dto = $this->prepareService->deposit($wallet, (string) $amount, $meta, $confirmed);
         } else {
             $dto = $this->prepareService->withdraw($wallet, (string) $amount, $meta, $confirmed);
@@ -158,7 +159,7 @@ final class CommonServiceLegacy
      * @param non-empty-array<int|string, Wallet>           $wallets
      * @param non-empty-array<int, TransactionDtoInterface> $objects
      *
-     * @return non-empty-array<string, Transaction>
+     * @return non-empty-array<string, TransactionInterface>
      */
     public function applyTransactions(array $wallets, array $objects): array
     {

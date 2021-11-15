@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bavix\Wallet\Test\Units\Domain;
 
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Services\TaxServiceInterface;
 use Bavix\Wallet\Test\Infra\Factories\BuyerFactory;
 use Bavix\Wallet\Test\Infra\Factories\ItemDiscountTaxFactory;
@@ -50,7 +50,7 @@ class GiftDiscountTaxTest extends TestCase
         self::assertNotNull($second->paid($product, true));
         self::assertNull($second->wallet->paid($product));
         self::assertNotNull($second->wallet->paid($product, true));
-        self::assertSame($transfer->status, Transfer::STATUS_GIFT);
+        self::assertSame($transfer->status, TransferInterface::STATUS_GIFT);
     }
 
     public function testRefund(): void
@@ -79,7 +79,7 @@ class GiftDiscountTaxTest extends TestCase
         $transfer = $first->wallet->gift($second, $product);
         self::assertSame($first->balance, (string) $product->getPersonalDiscount($first));
         self::assertSame($second->balanceInt, 0);
-        self::assertSame($transfer->status, Transfer::STATUS_GIFT);
+        self::assertSame($transfer->status, TransferInterface::STATUS_GIFT);
 
         $first->withdraw($product->getPersonalDiscount($first));
         self::assertSame($first->balanceInt, 0);
@@ -105,7 +105,7 @@ class GiftDiscountTaxTest extends TestCase
 
         $transfer = $second->wallet->forceGift($first, $product);
         self::assertNotNull($transfer);
-        self::assertSame($transfer->status, Transfer::STATUS_GIFT);
+        self::assertSame($transfer->status, TransferInterface::STATUS_GIFT);
 
         self::assertSame(
             $second->balanceInt,

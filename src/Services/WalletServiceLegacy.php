@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Bavix\Wallet\Services;
 
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
-use Bavix\Wallet\Models\Wallet as WalletModel;
+use Bavix\Wallet\Models\WalletInterface;
+use Bavix\Wallet\Models\WalletInterface as WalletModel;
+use Illuminate\Database\Eloquent\Model;
 
 final class WalletServiceLegacy
 {
@@ -27,11 +29,12 @@ final class WalletServiceLegacy
      * @deprecated
      * @see WalletModel::refreshBalance()
      */
-    public function refresh(WalletModel $wallet): bool
+    public function refresh(WalletInterface $wallet): bool
     {
         return $this->atomicService->block($wallet, function () use ($wallet) {
-            $whatIs = $wallet->balance;
-            $balance = $wallet->getAvailableBalance();
+            /** @var Model|WalletInterface $wallet */
+            $whatIs = $wallet->getBalanceAttribute();
+            $balance = $wallet->getAvailableBalanceAttribute();
             if ($this->math->compare($whatIs, $balance) === 0) {
                 return true;
             }

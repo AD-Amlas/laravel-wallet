@@ -59,6 +59,25 @@ layers:
         regex: ^Bavix\\.*Internal\\Service\\.*Service$
 
   # contracts
+  - name: Contracts
+    collectors:
+      - type: className
+        regex: ^Bavix\\.*\\Interfaces\\.*
+
+  - name: Model
+    collectors:
+      - type: className
+        regex: ^Bavix\\.*\\Models\\Transaction$
+      - type: className
+        regex: ^Bavix\\.*\\Models\\Transfer$
+      - type: className
+        regex: ^Bavix\\.*\\Models\\Wallet$
+
+  - name: ModelInterface
+    collectors:
+      - type: className
+        regex: ^Bavix\\.*\\Models\\.*Interface$
+
   - name: Service
     collectors:
       - type: className
@@ -97,15 +116,25 @@ ruleset:
     - AssemblerDtoInterface # delete as soon as possible
     - ModelNotFoundException
     - ServiceInterface
+    - ModelInterface
+    - EloquentModel # drop it...
+    - Contracts
     - Legacy # delete as soon as possible
+
+  Contracts:
+    - ModelInterface
+    - DtoInterface
 
   Infra:
     - ServiceInterface
     - Config
     - Cache
 
+  DtoInterface:
+    - Contracts
   Dto:
     - DtoInterface
+    - Contracts
 
   TransformInterface:
     - DtoInterface
@@ -116,28 +145,47 @@ ruleset:
 
   RepositoryInterface:
     - DtoInterface
+    - ModelInterface
   Repository:
     - RepositoryInterface
     - TransformInterface
     - DtoInterface
+    - ModelInterface
+
+  ModelInterface:
+    - Contracts
+  Model:
+    - AssemblerDtoInterface
+    - ServiceInterface
+    - ModelInterface
+    - EloquentModel
+    - Contracts
+    - Legacy # drop it...
+    - UI # drop it...
 
   ServiceInterface:
     - EloquentModel
     - DtoInterface
+    - ModelInterface
+    - Contracts
   Service:
     - AssemblerDtoInterface
     - RepositoryInterface
     - ServiceInterface
     - EloquentModel
     - DtoInterface
+    - Contracts
+    - ModelInterface # drop it?
 
   AssemblerDtoInterface:
     - EloquentModel
     - DtoInterface
+    - Contracts
   AssemblerDto:
     - AssemblerDtoInterface
     - ServiceInterface
     - EloquentModel
+    - Contracts
     - DtoInterface
     - Dto
 
@@ -145,3 +193,6 @@ ruleset:
     - AssemblerDtoInterface
     - ServiceInterface
     - DtoInterface
+    - ModelInterface
+    - EloquentModel
+    - Contracts

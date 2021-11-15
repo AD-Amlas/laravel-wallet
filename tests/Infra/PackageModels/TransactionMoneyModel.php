@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bavix\Wallet\Test\Infra\PackageModels;
 
+use Bavix\Wallet\Models\Transaction;
 use Cknow\Money\Money;
 
 /**
@@ -11,7 +12,7 @@ use Cknow\Money\Money;
  *
  * @property Money $currency
  */
-class TransactionMoney extends \Bavix\Wallet\Models\Transaction
+class TransactionMoneyModel extends Transaction
 {
     protected ?\Cknow\Money\Money $currency = null;
 

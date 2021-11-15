@@ -13,7 +13,7 @@ use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
 use Bavix\Wallet\Internal\Service\TranslatorServiceInterface;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 use Bavix\Wallet\Services\AtomicServiceInterface;
 use Bavix\Wallet\Services\CastServiceInterface;
 use Bavix\Wallet\Services\CommonServiceLegacy;
@@ -28,13 +28,13 @@ trait CanConfirm
      * @throws WalletOwnerInvalid
      * @throws ExceptionInterface
      */
-    public function confirm(Transaction $transaction): bool
+    public function confirm(TransactionInterface $transaction): bool
     {
         return app(DatabaseServiceInterface::class)->transaction(function () use ($transaction) {
-            if ($transaction->type === Transaction::TYPE_WITHDRAW) {
+            if ($transaction->getTypeAttribute() === TransactionInterface::TYPE_WITHDRAW) {
                 app(ConsistencyServiceInterface::class)->checkPotential(
                     app(CastServiceInterface::class)->getWallet($this),
-                    app(MathServiceInterface::class)->abs($transaction->amount)
+                    app(MathServiceInterface::class)->abs($transaction->getAmountAttribute())
                 );
             }
 
@@ -42,7 +42,7 @@ trait CanConfirm
         });
     }
 
-    public function safeConfirm(Transaction $transaction): bool
+    public function safeConfirm(TransactionInterface $transaction): bool
     {
         try {
             return $this->confirm($transaction);
@@ -56,10 +56,10 @@ trait CanConfirm
      *
      * @throws UnconfirmedInvalid
      */
-    public function resetConfirm(Transaction $transaction): bool
+    public function resetConfirm(TransactionInterface $transaction): bool
     {
         return app(AtomicServiceInterface::class)->block($this, fn () => app(DatabaseServiceInterface::class)->transaction(function () use ($transaction) {
-            if (!$transaction->confirmed) {
+            if (!$transaction->getConfirmedAttribute()) {
                 throw new UnconfirmedInvalid(
                     app(TranslatorServiceInterface::class)->get('wallet::errors.unconfirmed_invalid'),
                     ExceptionInterface::UNCONFIRMED_INVALID
@@ -68,7 +68,7 @@ trait CanConfirm
 
             $wallet = app(CastServiceInterface::class)->getWallet($this);
             $mathService = app(MathServiceInterface::class);
-            $negativeAmount = $mathService->negative($transaction->amount);
+            $negativeAmount = $mathService->negative($transaction->getAmountAttribute());
 
             return $transaction->update(['confirmed' => false]) &&
                 // update balance
@@ -78,7 +78,7 @@ trait CanConfirm
         }));
     }
 
-    public function safeResetConfirm(Transaction $transaction): bool
+    public function safeResetConfirm(TransactionInterface $transaction): bool
     {
         try {
             return $this->resetConfirm($transaction);
@@ -91,10 +91,10 @@ trait CanConfirm
      * @throws ConfirmedInvalid
      * @throws WalletOwnerInvalid
      */
-    public function forceConfirm(Transaction $transaction): bool
+    public function forceConfirm(TransactionInterface $transaction): bool
     {
         return app(AtomicServiceInterface::class)->block($this, fn () => app(DatabaseServiceInterface::class)->transaction(function () use ($transaction) {
-            if ($transaction->confirmed) {
+            if ($transaction->getConfirmedAttribute()) {
                 throw new ConfirmedInvalid(
                     app(TranslatorServiceInterface::class)->get('wallet::errors.confirmed_invalid'),
                     ExceptionInterface::CONFIRMED_INVALID
@@ -102,7 +102,7 @@ trait CanConfirm
             }
 
             $wallet = app(CastServiceInterface::class)->getWallet($this);
-            if ($wallet->getKey() !== $transaction->wallet_id) {
+            if ($wallet->getKey() !== $transaction->getWalletIdAttribute()) {
                 throw new WalletOwnerInvalid(
                     app(TranslatorServiceInterface::class)->get('wallet::errors.owner_invalid'),
                     ExceptionInterface::WALLET_OWNER_INVALID
@@ -112,7 +112,7 @@ trait CanConfirm
             return $transaction->update(['confirmed' => true]) &&
                 // update balance
                 app(CommonServiceLegacy::class)
-                    ->addBalance($wallet, $transaction->amount)
+                    ->addBalance($wallet, $transaction->getAmountAttribute())
                 ;
         }));
     }

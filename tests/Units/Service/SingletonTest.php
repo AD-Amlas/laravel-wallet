@@ -6,12 +6,12 @@ namespace Bavix\Wallet\Test\Units\Service;
 
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
+use Bavix\Wallet\Models\TransactionInterface;
+use Bavix\Wallet\Models\TransferInterface;
+use Bavix\Wallet\Models\WalletInterface;
 use Bavix\Wallet\Objects\Cart;
 use Bavix\Wallet\Services\CommonServiceLegacy;
 use Bavix\Wallet\Services\WalletServiceLegacy;
-use Bavix\Wallet\Test\Infra\PackageModels\Transaction;
-use Bavix\Wallet\Test\Infra\PackageModels\Transfer;
-use Bavix\Wallet\Test\Infra\PackageModels\Wallet;
 use Bavix\Wallet\Test\Infra\TestCase;
 
 /**
@@ -31,17 +31,17 @@ class SingletonTest extends TestCase
 
     public function testTransaction(): void
     {
-        self::assertNotSame($this->getRefId(Transaction::class), $this->getRefId(Transaction::class));
+        self::assertNotSame($this->getRefId(TransactionInterface::class), $this->getRefId(TransactionInterface::class));
     }
 
     public function testTransfer(): void
     {
-        self::assertNotSame($this->getRefId(Transfer::class), $this->getRefId(Transfer::class));
+        self::assertNotSame($this->getRefId(TransferInterface::class), $this->getRefId(TransferInterface::class));
     }
 
     public function testWallet(): void
     {
-        self::assertNotSame($this->getRefId(Wallet::class), $this->getRefId(Wallet::class));
+        self::assertNotSame($this->getRefId(WalletInterface::class), $this->getRefId(WalletInterface::class));
     }
 
     public function testCommonService(): void

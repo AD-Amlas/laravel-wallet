@@ -18,9 +18,14 @@ interface TransactionInterface
 
     public function wallet(): BelongsTo;
 
-    public function getAmountIntAttribute(): int;
+    public function getTypeAttribute(): string;
+    public function getWalletIdAttribute(): int;
 
+    public function getAmountAttribute(): string;
+    public function getAmountIntAttribute(): int;
     public function getAmountFloatAttribute(): string;
+
+    public function getConfirmedAttribute(): bool;
 
     /**
      * @param float|int|string $amount

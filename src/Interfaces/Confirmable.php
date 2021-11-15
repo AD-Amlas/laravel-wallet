@@ -8,7 +8,7 @@ use Bavix\Wallet\Exceptions\BalanceIsEmpty;
 use Bavix\Wallet\Exceptions\ConfirmedInvalid;
 use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Bavix\Wallet\Exceptions\WalletOwnerInvalid;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 
 interface Confirmable
 {
@@ -18,20 +18,20 @@ interface Confirmable
      * @throws ConfirmedInvalid
      * @throws WalletOwnerInvalid
      */
-    public function confirm(Transaction $transaction): bool;
+    public function confirm(TransactionInterface $transaction): bool;
 
-    public function safeConfirm(Transaction $transaction): bool;
+    public function safeConfirm(TransactionInterface $transaction): bool;
 
     /**
      * @throws ConfirmedInvalid
      */
-    public function resetConfirm(Transaction $transaction): bool;
+    public function resetConfirm(TransactionInterface $transaction): bool;
 
-    public function safeResetConfirm(Transaction $transaction): bool;
+    public function safeResetConfirm(TransactionInterface $transaction): bool;
 
     /**
      * @throws ConfirmedInvalid
      * @throws WalletOwnerInvalid
      */
-    public function forceConfirm(Transaction $transaction): bool;
+    public function forceConfirm(TransactionInterface $transaction): bool;
 }

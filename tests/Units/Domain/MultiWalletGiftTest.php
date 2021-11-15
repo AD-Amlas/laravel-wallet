@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bavix\Wallet\Test\Units\Domain;
 
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Models\Wallet;
 use Bavix\Wallet\Test\Infra\Factories\ItemFactory;
 use Bavix\Wallet\Test\Infra\Factories\UserMultiFactory;
@@ -47,7 +47,7 @@ class MultiWalletGiftTest extends TestCase
         self::assertSame($wallet->balanceInt, 0);
         self::assertSame($first->balanceInt, 1);
         self::assertSame($second->balanceInt, 2);
-        self::assertSame($transfer->status, Transfer::STATUS_GIFT);
+        self::assertSame($transfer->status, TransferInterface::STATUS_GIFT);
 
         self::assertSame((int) $transfer->withdraw->wallet->holder->id, (int) $first->id);
         self::assertInstanceOf(UserMulti::class, $transfer->withdraw->wallet->holder);

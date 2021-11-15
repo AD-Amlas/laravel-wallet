@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Bavix\Wallet\Traits;
 
 use Bavix\Wallet\Internal\Service\UuidServiceInterface;
-use Bavix\Wallet\Models\Wallet as WalletModel;
+use Bavix\Wallet\Models\WalletInterface;
+use Bavix\Wallet\Models\WalletInterface as WalletModel;
 use Bavix\Wallet\Services\CastServiceInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Trait MorphOneWallet.
  *
- * @property WalletModel $wallet
+ * @property Model|WalletInterface $wallet
  */
 trait MorphOneWallet
 {

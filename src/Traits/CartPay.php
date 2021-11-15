@@ -13,7 +13,7 @@ use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Bavix\Wallet\Internal\Exceptions\ModelNotFoundException;
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
 use Bavix\Wallet\Internal\Service\TranslatorServiceInterface;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Objects\Cart;
 use Bavix\Wallet\Services\BasketServiceInterface;
 use Bavix\Wallet\Services\CommonServiceLegacy;
@@ -28,7 +28,7 @@ trait CartPay
     use HasWallet;
 
     /**
-     * @return non-empty-array<Transfer>
+     * @return non-empty-array<TransferInterface>
      */
     public function payFreeCart(CartInterface $cart): array
     {
@@ -51,7 +51,7 @@ trait CartPay
                 $transfers[] = $prepareService->transferLazy(
                     $this,
                     $product,
-                    Transfer::STATUS_PAID,
+                    TransferInterface::STATUS_PAID,
                     0,
                     $metaService->getMeta($cart, $product)
                 );
@@ -62,7 +62,7 @@ trait CartPay
     }
 
     /**
-     * @return Transfer[]
+     * @return TransferInterface[]
      */
     public function safePayCart(CartInterface $cart, bool $force = false): array
     {
@@ -74,7 +74,7 @@ trait CartPay
     }
 
     /**
-     * @return non-empty-array<Transfer>
+     * @return non-empty-array<TransferInterface>
      */
     public function payCart(CartInterface $cart, bool $force = false): array
     {
@@ -95,7 +95,7 @@ trait CartPay
                 $transfers[] = $prepareService->transferLazy(
                     $this,
                     $product,
-                    Transfer::STATUS_PAID,
+                    TransferInterface::STATUS_PAID,
                     $product->getAmountProduct($this),
                     $metaService->getMeta($cart, $product)
                 );
@@ -110,7 +110,7 @@ trait CartPay
     }
 
     /**
-     * @return non-empty-array<Transfer>
+     * @return non-empty-array<TransferInterface>
      */
     public function forcePayCart(CartInterface $cart): array
     {
@@ -152,7 +152,7 @@ trait CartPay
                 $objects[] = $prepareService->transferLazy(
                     $product,
                     $transfer->withdraw->wallet,
-                    Transfer::STATUS_TRANSFER,
+                    TransferInterface::STATUS_TRANSFER,
                     $transfer->deposit->amount, // fixme: need optimize
                     app(MetaServiceLegacy::class)->getMeta($cart, $product)
                 );
@@ -167,7 +167,7 @@ trait CartPay
             // fixme: one query update for
             foreach ($transfers as $transfer) {
                 $results[] = $transfer->update([
-                    'status' => Transfer::STATUS_REFUND,
+                    'status' => TransferInterface::STATUS_REFUND,
                     'status_last' => $transfer->status,
                 ]);
             }
@@ -203,7 +203,7 @@ trait CartPay
     /**
      * Checks acquired product your wallet.
      */
-    public function paid(Product $product, bool $gifts = false): ?Transfer
+    public function paid(Product $product, bool $gifts = false): ?TransferInterface
     {
         $cart = app(Cart::class)->addItem($product);
         $purchases = app(PurchaseServiceInterface::class)

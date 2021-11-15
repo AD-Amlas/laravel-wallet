@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bavix\Wallet\Traits;
 
 use Bavix\Wallet\Interfaces\Product;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Objects\Cart;
 use function current;
 
@@ -13,22 +13,22 @@ trait CanPay
 {
     use CartPay;
 
-    public function payFree(Product $product): Transfer
+    public function payFree(Product $product): TransferInterface
     {
         return current($this->payFreeCart(app(Cart::class)->addItem($product)));
     }
 
-    public function safePay(Product $product, bool $force = false): ?Transfer
+    public function safePay(Product $product, bool $force = false): ?TransferInterface
     {
         return current($this->safePayCart(app(Cart::class)->addItem($product), $force)) ?: null;
     }
 
-    public function pay(Product $product, bool $force = false): Transfer
+    public function pay(Product $product, bool $force = false): TransferInterface
     {
         return current($this->payCart(app(Cart::class)->addItem($product), $force));
     }
 
-    public function forcePay(Product $product): Transfer
+    public function forcePay(Product $product): TransferInterface
     {
         return current($this->forcePayCart(app(Cart::class)->addItem($product)));
     }

@@ -9,7 +9,7 @@ use Bavix\Wallet\Internal\Assembler\TransferLazyDtoAssemblerInterface;
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Services\AtomicServiceInterface;
 use Bavix\Wallet\Services\CastServiceInterface;
 use Bavix\Wallet\Services\CommonServiceLegacy;
@@ -23,7 +23,7 @@ trait CanExchange
     /**
      * {@inheritdoc}
      */
-    public function exchange(Wallet $to, $amount, ?array $meta = null): Transfer
+    public function exchange(Wallet $to, $amount, ?array $meta = null): TransferInterface
     {
         $wallet = app(CastServiceInterface::class)->getWallet($this);
 
@@ -35,7 +35,7 @@ trait CanExchange
     /**
      * {@inheritdoc}
      */
-    public function safeExchange(Wallet $to, $amount, ?array $meta = null): ?Transfer
+    public function safeExchange(Wallet $to, $amount, ?array $meta = null): ?TransferInterface
     {
         try {
             return $this->exchange($to, $amount, $meta);
@@ -47,7 +47,7 @@ trait CanExchange
     /**
      * {@inheritdoc}
      */
-    public function forceExchange(Wallet $to, $amount, ?array $meta = null): Transfer
+    public function forceExchange(Wallet $to, $amount, ?array $meta = null): TransferInterface
     {
         return app(AtomicServiceInterface::class)->block($this, fn () => app(DatabaseServiceInterface::class)->transaction(function () use ($to, $amount, $meta) {
             $prepareService = app(PrepareServiceInterface::class);
@@ -70,7 +70,7 @@ trait CanExchange
                 $fee,
                 $withdrawDto,
                 $depositDto,
-                Transfer::STATUS_EXCHANGE,
+                TransferInterface::STATUS_EXCHANGE,
             );
 
             $transfers = app(CommonServiceLegacy::class)->applyTransfers([$transferLazyDto]);

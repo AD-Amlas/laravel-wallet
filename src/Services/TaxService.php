@@ -33,7 +33,7 @@ final class TaxService implements TaxServiceInterface
                 $this->mathService->div(
                     $this->mathService->mul($amount, $wallet->getFeePercent(), 0),
                     100,
-                    $this->castService->getWallet($wallet)->decimal_places
+                    $this->castService->getWallet($wallet)->getDecimalPlacesAttribute()
                 )
             );
         }

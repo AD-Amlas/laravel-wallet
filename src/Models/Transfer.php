@@ -12,18 +12,18 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 /**
  * Class Transfer.
  *
- * @property string      $status
- * @property string      $discount
- * @property int         $deposit_id
- * @property int         $withdraw_id
- * @property string      $from_type
- * @property int         $from_id
- * @property string      $to_type
- * @property int         $to_id
- * @property string      $uuid
- * @property string      $fee
- * @property Transaction $deposit
- * @property Transaction $withdraw
+ * @property string               $status
+ * @property string               $discount
+ * @property int                  $deposit_id
+ * @property int                  $withdraw_id
+ * @property string               $from_type
+ * @property int                  $from_id
+ * @property string               $to_type
+ * @property int                  $to_id
+ * @property string               $uuid
+ * @property string               $fee
+ * @property TransactionInterface $deposit
+ * @property TransactionInterface $withdraw
  */
 class Transfer extends Model implements TransferInterface
 {
@@ -72,11 +72,11 @@ class Transfer extends Model implements TransferInterface
 
     public function deposit(): BelongsTo
     {
-        return $this->belongsTo(Transaction::class, 'deposit_id');
+        return $this->belongsTo(config('transaction.model', Transaction::class), 'deposit_id');
     }
 
     public function withdraw(): BelongsTo
     {
-        return $this->belongsTo(Transaction::class, 'withdraw_id');
+        return $this->belongsTo(config('transaction.model', Transaction::class), 'withdraw_id');
     }
 }

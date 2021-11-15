@@ -102,8 +102,13 @@ class Wallet extends Model implements WalletInterface
         );
     }
 
+    public function holder(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     /** @codeCoverageIgnore */
-    public function getOriginalBalance(): string
+    public function getOriginalBalanceAttribute(): string
     {
         if (method_exists($this, 'getRawOriginal')) {
             return (string) $this->getRawOriginal('balance', 0);
@@ -112,10 +117,7 @@ class Wallet extends Model implements WalletInterface
         return (string) $this->getOriginal('balance', 0);
     }
 
-    /**
-     * @return float|int
-     */
-    public function getAvailableBalance()
+    public function getAvailableBalanceAttribute(): string
     {
         return $this->transactions()
             ->where('wallet_id', $this->getKey())
@@ -124,13 +126,13 @@ class Wallet extends Model implements WalletInterface
         ;
     }
 
-    public function holder(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
     public function getCurrencyAttribute(): string
     {
         return $this->meta['currency'] ?? Str::upper($this->slug);
+    }
+
+    public function getDecimalPlacesAttribute(): int
+    {
+        return (int) ($this->decimal_places ?? $this->attributes['decimal_places'] ?? 2);
     }
 }

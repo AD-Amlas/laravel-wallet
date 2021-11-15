@@ -8,7 +8,7 @@ use Bavix\Wallet\Exceptions\AmountInvalid;
 use Bavix\Wallet\Exceptions\BalanceIsEmpty;
 use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 use Bavix\Wallet\Test\Infra\Factories\UserFactory;
 use Bavix\Wallet\Test\Infra\Models\User;
 use Bavix\Wallet\Test\Infra\TestCase;
@@ -42,14 +42,14 @@ class WalletTest extends TestCase
         self::assertSame(
             3,
             $user->transactions()
-                ->where(['type' => Transaction::TYPE_DEPOSIT])
+                ->where(['type' => TransactionInterface::TYPE_DEPOSIT])
                 ->count()
         );
 
         self::assertSame(
             1,
             $user->transactions()
-                ->where(['type' => Transaction::TYPE_WITHDRAW])
+                ->where(['type' => TransactionInterface::TYPE_WITHDRAW])
                 ->count()
         );
 

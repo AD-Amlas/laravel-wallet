@@ -11,9 +11,10 @@ use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
-use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 use Bavix\Wallet\Models\Transfer;
-use Bavix\Wallet\Models\Wallet as WalletModel;
+use Bavix\Wallet\Models\TransferInterface;
+use Bavix\Wallet\Models\WalletInterface as WalletModel;
 use Bavix\Wallet\Services\BookkeeperServiceInterface;
 use Bavix\Wallet\Services\CastServiceInterface;
 use Bavix\Wallet\Services\CommonServiceLegacy;
@@ -42,10 +43,10 @@ trait HasWallet
      * @throws AmountInvalid
      * @throws Throwable
      */
-    public function deposit($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    public function deposit($amount, ?array $meta = null, bool $confirmed = true): TransactionInterface
     {
         return app(DatabaseServiceInterface::class)->transaction(fn () => app(CommonServiceLegacy::class)
-            ->makeTransaction($this, Transaction::TYPE_DEPOSIT, $amount, $meta, $confirmed));
+            ->makeTransaction($this, TransactionInterface::TYPE_DEPOSIT, $amount, $meta, $confirmed));
     }
 
     /**
@@ -68,10 +69,8 @@ trait HasWallet
      *  var_dump($user1->balance); // 200
      *  $user2->deposit(100);
      *  var_dump($user2->balance); // 300
-     *
-     * @return float|int|string
      */
-    public function getBalanceAttribute()
+    public function getBalanceAttribute(): string
     {
         /** @var Wallet $this */
         return app(BookkeeperServiceInterface::class)->amount(
@@ -94,7 +93,7 @@ trait HasWallet
     {
         return app(CastServiceInterface::class)
             ->getHolder($this)
-            ->morphMany(config('wallet.transaction.model', Transaction::class), 'payable')
+            ->morphMany(config('wallet.transaction.model', TransactionInterface::class), 'payable')
         ;
     }
 
@@ -103,7 +102,7 @@ trait HasWallet
      *
      * @param int|string $amount
      */
-    public function safeTransfer(Wallet $wallet, $amount, ?array $meta = null): ?Transfer
+    public function safeTransfer(Wallet $wallet, $amount, ?array $meta = null): ?TransferInterface
     {
         try {
             return $this->transfer($wallet, $amount, $meta);
@@ -122,7 +121,7 @@ trait HasWallet
      * @throws InsufficientFunds
      * @throws Throwable
      */
-    public function transfer(Wallet $wallet, $amount, ?array $meta = null): Transfer
+    public function transfer(Wallet $wallet, $amount, ?array $meta = null): TransferInterface
     {
         /** @var Wallet $this */
         app(ConsistencyServiceInterface::class)->checkPotential($this, $amount);
@@ -140,7 +139,7 @@ trait HasWallet
      * @throws InsufficientFunds
      * @throws Throwable
      */
-    public function withdraw($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    public function withdraw($amount, ?array $meta = null, bool $confirmed = true): TransactionInterface
     {
         /** @var Wallet $this */
         app(ConsistencyServiceInterface::class)->checkPotential($this, $amount);
@@ -164,7 +163,7 @@ trait HasWallet
             return true;
         }
 
-        return $math->compare($this->balance, $amount) >= 0;
+        return $math->compare($this->getBalanceAttribute(), $amount) >= 0;
     }
 
     /**
@@ -175,13 +174,10 @@ trait HasWallet
      * @throws AmountInvalid
      * @throws Throwable
      */
-    public function forceWithdraw($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    public function forceWithdraw($amount, ?array $meta = null, bool $confirmed = true): TransactionInterface
     {
-        /** @var Wallet $self */
-        $self = $this;
-
-        return app(DatabaseServiceInterface::class)->transaction(static fn () => app(CommonServiceLegacy::class)
-            ->makeTransaction($self, Transaction::TYPE_WITHDRAW, $amount, $meta, $confirmed));
+        return app(DatabaseServiceInterface::class)->transaction(fn () => app(CommonServiceLegacy::class)
+            ->makeTransaction($this, TransactionInterface::TYPE_WITHDRAW, $amount, $meta, $confirmed));
     }
 
     /**
@@ -193,13 +189,10 @@ trait HasWallet
      * @throws AmountInvalid
      * @throws Throwable
      */
-    public function forceTransfer(Wallet $wallet, $amount, ?array $meta = null): Transfer
+    public function forceTransfer(Wallet $wallet, $amount, ?array $meta = null): TransferInterface
     {
-        /** @var Wallet $self */
-        $self = $this;
-
-        return app(DatabaseServiceInterface::class)->transaction(static fn () => app(CommonServiceLegacy::class)
-            ->forceTransfer($self, $wallet, $amount, $meta));
+        return app(DatabaseServiceInterface::class)->transaction(fn () => app(CommonServiceLegacy::class)
+            ->forceTransfer($this, $wallet, $amount, $meta));
     }
 
     /**

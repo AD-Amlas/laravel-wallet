@@ -35,8 +35,11 @@ use Bavix\Wallet\Internal\Transform\TransactionDtoTransformerInterface;
 use Bavix\Wallet\Internal\Transform\TransferDtoTransformer;
 use Bavix\Wallet\Internal\Transform\TransferDtoTransformerInterface;
 use Bavix\Wallet\Models\Transaction;
+use Bavix\Wallet\Models\TransactionInterface;
 use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Models\Wallet;
+use Bavix\Wallet\Models\WalletInterface;
 use Bavix\Wallet\Services\AssistantService;
 use Bavix\Wallet\Services\AssistantServiceInterface;
 use Bavix\Wallet\Services\AtmService;
@@ -218,8 +221,19 @@ final class WalletServiceProvider extends ServiceProvider
 
     private function bindObjects(array $configure): void
     {
-        $this->app->bind(Transaction::class, $configure['transaction']['model'] ?? null);
-        $this->app->bind(Transfer::class, $configure['transfer']['model'] ?? null);
-        $this->app->bind(Wallet::class, $configure['wallet']['model'] ?? null);
+        $this->app->bind(
+            TransactionInterface::class,
+            $configure['transaction']['model'] ?? Transaction::class
+        );
+
+        $this->app->bind(
+            TransferInterface::class,
+            $configure['transfer']['model'] ?? Transfer::class
+        );
+
+        $this->app->bind(
+            WalletInterface::class,
+            $configure['wallet']['model'] ?? Wallet::class
+        );
     }
 }

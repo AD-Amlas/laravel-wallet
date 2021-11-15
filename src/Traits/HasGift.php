@@ -15,8 +15,8 @@ use Bavix\Wallet\Internal\Assembler\TransferDtoAssemblerInterface;
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Bavix\Wallet\Internal\Service\DatabaseServiceInterface;
 use Bavix\Wallet\Internal\Service\MathServiceInterface;
-use Bavix\Wallet\Models\Transaction;
-use Bavix\Wallet\Models\Transfer;
+use Bavix\Wallet\Models\TransactionInterface;
+use Bavix\Wallet\Models\TransferInterface;
 use Bavix\Wallet\Services\AtmServiceInterface;
 use Bavix\Wallet\Services\AtomicServiceInterface;
 use Bavix\Wallet\Services\CastServiceInterface;
@@ -34,7 +34,7 @@ trait HasGift
     /**
      * Give the goods safely.
      */
-    public function safeGift(Wallet $to, Product $product, bool $force = false): ?Transfer
+    public function safeGift(Wallet $to, Product $product, bool $force = false): ?TransferInterface
     {
         try {
             return $this->gift($to, $product, $force);
@@ -53,9 +53,9 @@ trait HasGift
      * @throws InsufficientFunds
      * @throws Throwable
      */
-    public function gift(Wallet $to, Product $product, bool $force = false): Transfer
+    public function gift(Wallet $to, Product $product, bool $force = false): TransferInterface
     {
-        return app(AtomicServiceInterface::class)->block($this, function () use ($to, $product, $force): Transfer {
+        return app(AtomicServiceInterface::class)->block($this, function () use ($to, $product, $force): TransferInterface {
             /**
              * Who's giving? Let's call him Santa Claus.
              *
@@ -68,7 +68,7 @@ trait HasGift
              * I think it is wrong to make the "assemble" method public.
              * That's why I address him like this!
              */
-            return app(DatabaseServiceInterface::class)->transaction(static function () use ($santa, $to, $product, $force): Transfer {
+            return app(DatabaseServiceInterface::class)->transaction(static function () use ($santa, $to, $product, $force): TransferInterface {
                 $mathService = app(MathServiceInterface::class);
                 $discountService = app(DiscountServiceInterface::class);
                 $taxService = app(TaxServiceInterface::class);
@@ -86,15 +86,15 @@ trait HasGift
                     app(ConsistencyServiceInterface::class)->checkPotential($santa, $mathService->add($amount, $fee));
                 }
 
-                $withdraw = $commonService->makeTransaction($santa, Transaction::TYPE_WITHDRAW, $mathService->add($amount, $fee), $meta);
-                $deposit = $commonService->makeTransaction($product, Transaction::TYPE_DEPOSIT, $amount, $meta);
+                $withdraw = $commonService->makeTransaction($santa, TransactionInterface::TYPE_WITHDRAW, $mathService->add($amount, $fee), $meta);
+                $deposit = $commonService->makeTransaction($product, TransactionInterface::TYPE_DEPOSIT, $amount, $meta);
 
                 $castService = app(CastServiceInterface::class);
 
                 $transfer = app(TransferDtoAssemblerInterface::class)->create(
                     $deposit->getKey(),
                     $withdraw->getKey(),
-                    Transfer::STATUS_GIFT,
+                    TransferInterface::STATUS_GIFT,
                     $castService->getWallet($to),
                     $castService->getModel($product),
                     $discount,
@@ -114,7 +114,7 @@ trait HasGift
      * @throws AmountInvalid
      * @throws Throwable
      */
-    public function forceGift(Wallet $to, Product $product): Transfer
+    public function forceGift(Wallet $to, Product $product): TransferInterface
     {
         return $this->gift($to, $product, true);
     }

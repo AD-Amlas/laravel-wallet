@@ -7,7 +7,7 @@ namespace Bavix\Wallet\Services;
 use Bavix\Wallet\Internal\Exceptions\RecordNotFoundException;
 use Bavix\Wallet\Internal\Service\LockServiceInterface;
 use Bavix\Wallet\Internal\Service\StorageServiceInterface;
-use Bavix\Wallet\Models\Wallet;
+use Bavix\Wallet\Models\WalletInterface;
 
 final class BookkeeperService implements BookkeeperServiceInterface
 {
@@ -23,31 +23,31 @@ final class BookkeeperService implements BookkeeperServiceInterface
         $this->lock = $lock;
     }
 
-    public function missing(Wallet $wallet): bool
+    public function missing(WalletInterface $wallet): bool
     {
         return $this->storage->missing($this->getKey($wallet));
     }
 
-    public function amount(Wallet $wallet): string
+    public function amount(WalletInterface $wallet): string
     {
         try {
             return $this->storage->get($this->getKey($wallet));
         } catch (RecordNotFoundException $recordNotFoundException) {
             $this->lock->block(
                 $this->getKey($wallet),
-                fn () => $this->sync($wallet, $wallet->getOriginalBalance()),
+                fn () => $this->sync($wallet, $wallet->getOriginalBalanceAttribute()),
             );
         }
 
         return $this->storage->get($this->getKey($wallet));
     }
 
-    public function sync(Wallet $wallet, $value): bool
+    public function sync(WalletInterface $wallet, $value): bool
     {
         return $this->storage->sync($this->getKey($wallet), $value);
     }
 
-    public function increase(Wallet $wallet, $value): string
+    public function increase(WalletInterface $wallet, $value): string
     {
         try {
             return $this->storage->increase($this->getKey($wallet), $value);
@@ -58,7 +58,7 @@ final class BookkeeperService implements BookkeeperServiceInterface
         return $this->storage->increase($this->getKey($wallet), $value);
     }
 
-    private function getKey(Wallet $wallet): string
+    private function getKey(WalletInterface $wallet): string
     {
         return __CLASS__.'::'.$wallet->uuid;
     }
